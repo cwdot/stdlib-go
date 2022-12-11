@@ -1,3 +1,3 @@
-module github.com/cwdot/inventory/lib-stdlib
+module github.com/cwdot/go-stdlib
 
 go 1.19
