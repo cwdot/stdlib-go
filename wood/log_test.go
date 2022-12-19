@@ -36,3 +36,9 @@ func TestPrefix(t *testing.T) {
 
 	add("f")
 }
+
+func TestPrintf(t *testing.T) {
+	Init(logrus.InfoLevel)
+
+	Printf("test %s", "f")
+}

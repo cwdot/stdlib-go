@@ -49,6 +49,14 @@ func decorate(args ...interface{}) []any {
 	return c
 }
 
+func decorateF(level logrus.Level, args []interface{}, fn func(format string, args []any)) {
+	if ignored(level) {
+		return
+	}
+	format := args[0].(string)
+	fn(format, args[1:])
+}
+
 func Prefix(newPrefix string) {
 	label = newPrefix
 	stack = append(stack, label)
@@ -250,50 +258,61 @@ func Fatal(args ...interface{}) {
 	std.Fatal(decorate(args...)...)
 }
 
-//// Tracef logs a message at level Trace on the standard logger.
-//func Tracef(format string, args ...interface{}) {
-//	std.Tracef(format, args...)
-//}
-//
-//// Debugf logs a message at level PrintDebug on the standard logger.
-//func Debugf(format string, args ...interface{}) {
-//	std.Debugf(format, args...)
-//}
-//
-//// Printf logs a message at level Info on the standard logger.
-//func Printf(format string, args ...interface{}) {
-//	std.Printf(format, args...)
-//}
-//
-//// Infof logs a message at level Info on the standard logger.
-//func Infof(format string, args ...interface{}) {
-//	std.Infof(format, args...)
-//}
-//
-//// Warnf logs a message at level Warn on the standard logger.
-//func Warnf(format string, args ...interface{}) {
-//	std.Warnf(format, args...)
-//}
-//
-//// Warningf logs a message at level Warn on the standard logger.
-//func Warningf(format string, args ...interface{}) {
-//	std.Warningf(format, args...)
-//}
-//
-//// Errorf logs a message at level Error on the standard logger.
-//func Errorf(format string, args ...interface{}) {
-//	std.Errorf(format, args...)
-//}
-//
-//// Panicf logs a message at level Panic on the standard logger.
-//func Panicf(format string, args ...interface{}) {
-//	std.Panicf(format, args...)
-//}
-//
-//// Fatalf logs a message at level Fatal on the standard logger then the process will exit with status set to 1.
-//func Fatalf(format string, args ...interface{}) {
-//	std.Fatalf(format, args...)
-//}
+// Tracef logs a message with formatting at level Trace on the standard logger.
+func Tracef(args ...interface{}) {
+	decorateF(logrus.TraceLevel, args, func(format string, args []any) {
+		std.Tracef(format, args...)
+	})
+}
+
+// Debugf logs a message with formatting at level Debug on the standard logger.
+func Debugf(args ...interface{}) {
+	decorateF(logrus.InfoLevel, args, func(format string, args []any) {
+		std.Debugf(format, args...)
+	})
+}
+
+// Printf logs a message with formatting at level Info on the standard logger.
+func Printf(args ...interface{}) {
+	decorateF(logrus.InfoLevel, args, func(format string, args []any) {
+		std.Printf(format, args...)
+	})
+}
+
+// Infof logs a message with formatting at level Info on the standard logger.
+func Infof(args ...interface{}) {
+	decorateF(logrus.InfoLevel, args, func(format string, args []any) {
+		std.Infof(format, args...)
+	})
+}
+
+// Warnf logs a message at level Info on the standard logger.
+func Warnf(args ...interface{}) {
+	decorateF(logrus.WarnLevel, args, func(format string, args []any) {
+		std.Warnf(format, args...)
+	})
+}
+
+// Errorf logs a message with formatting at level Error on the standard logger.
+func Errorf(args ...interface{}) {
+	decorateF(logrus.ErrorLevel, args, func(format string, args []any) {
+		std.Errorf(format, args...)
+	})
+}
+
+// Panicf logs a message with formatting at level Panic on the standard logger.
+func Panicf(args ...interface{}) {
+	decorateF(logrus.PanicLevel, args, func(format string, args []any) {
+		std.Panicf(format, args...)
+	})
+}
+
+// Fatalf logs a message with formatting at level Fatal on the standard logger.
+func Fatalf(args ...interface{}) {
+	decorateF(logrus.FatalLevel, args, func(format string, args []any) {
+		std.Fatalf(format, args...)
+	})
+}
 
 // Traceln logs a message at level Trace on the standard logger.
 func Traceln(args ...interface{}) {
