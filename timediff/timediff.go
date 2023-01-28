@@ -1,4 +1,4 @@
-package extratime
+package timediff
 
 import (
 	"fmt"
@@ -14,15 +14,13 @@ type TimeDiffOpts struct {
 	EpochRounding bool
 }
 
-// TimeDiff computes the difference
-// Generally: a < b
-func TimeDiff(a time.Time, b time.Time, fn ...func(*TimeDiffOpts)) string {
-	opts := &TimeDiffOpts{
+func Compute(a time.Time, b time.Time, opts ...func(*TimeDiffOpts)) string {
+	opt := &TimeDiffOpts{
 		Compact:       false,
 		EpochRounding: false,
 	}
-	for _, f := range fn {
-		f(opts)
+	for _, o := range opts {
+		o(opt)
 	}
 
 	hours := b.Sub(a).Hours()
@@ -61,11 +59,23 @@ func TimeDiff(a time.Time, b time.Time, fn ...func(*TimeDiffOpts)) string {
 	}
 
 	// trim to largest epochs
-	if opts.EpochRounding && len(parts) > 3 {
+	if opt.EpochRounding && len(parts) > 3 {
 		parts = parts[0:2]
 	}
-	if opts.Compact {
+	if opt.Compact {
 		return strings.Join(parts, "")
 	}
 	return strings.Join(parts, " ")
+}
+
+func Compact() func(*TimeDiffOpts) {
+	return func(s *TimeDiffOpts) {
+		s.Compact = true
+	}
+}
+
+func EpochRounding() func(*TimeDiffOpts) {
+	return func(s *TimeDiffOpts) {
+		s.EpochRounding = true
+	}
 }
