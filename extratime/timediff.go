@@ -9,26 +9,39 @@ import (
 
 const TimeLayout = "2006-01-02T15:04:05Z"
 
+type TimeDiffOpts struct {
+	Compact       bool
+	EpochRounding bool
+}
+
 // TimeDiff computes the difference
 // Generally: a < b
-func TimeDiff(a time.Time, b time.Time, compact bool) string {
-	hs := b.Sub(a).Hours()
+func TimeDiff(a time.Time, b time.Time, fn ...func(*TimeDiffOpts)) string {
+	opts := &TimeDiffOpts{
+		Compact:       false,
+		EpochRounding: false,
+	}
+	for _, f := range fn {
+		f(opts)
+	}
+
+	hours := b.Sub(a).Hours()
 
 	var years, days float64
 
-	years = math.Floor(hs / 365 / 24)
-	hs = hs - (years * 365 * 24)
+	years = math.Floor(hours / 365 / 24)
+	hours = hours - (years * 365 * 24)
 
-	if hs >= 24 {
-		days = math.Floor(hs / 24)
-		hs = hs - (days * 24)
+	if hours >= 24 {
+		days = math.Floor(hours / 24)
+		hours = hours - (days * 24)
 	}
 
-	hs, mf := math.Modf(hs)
-	ms := mf * 60
+	hours, mf := math.Modf(hours)
+	mins := mf * 60
 
-	ms, sf := math.Modf(ms)
-	ss := sf * 60
+	mins, sf := math.Modf(mins)
+	secs := sf * 60
 
 	parts := make([]string, 0, 5)
 	if years != 0 {
@@ -37,17 +50,21 @@ func TimeDiff(a time.Time, b time.Time, compact bool) string {
 	if days != 0 {
 		parts = append(parts, fmt.Sprintf("%.0fd", days))
 	}
-	if hs != 0 {
-		parts = append(parts, fmt.Sprintf("%.0fh", hs))
+	if hours != 0 {
+		parts = append(parts, fmt.Sprintf("%.0fh", hours))
 	}
-	if ms != 0 {
-		parts = append(parts, fmt.Sprintf("%.0fn", ms))
+	if mins != 0 {
+		parts = append(parts, fmt.Sprintf("%.0fm", mins))
 	}
-	if ss != 0 {
-		parts = append(parts, fmt.Sprintf("%.0fs", ss))
+	if secs != 0 {
+		parts = append(parts, fmt.Sprintf("%.0fs", secs))
 	}
 
-	if compact {
+	// trim to largest epochs
+	if opts.EpochRounding && len(parts) > 3 {
+		parts = parts[0:2]
+	}
+	if opts.Compact {
 		return strings.Join(parts, "")
 	}
 	return strings.Join(parts, " ")

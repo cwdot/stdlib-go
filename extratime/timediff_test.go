@@ -4,9 +4,11 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/require"
 )
 
-func TestTimeDiff(t *testing.T) {
+func TestTimeDiffFormatting(t *testing.T) {
 	y1 := time.Date(2020, 1, 1, 1, 1, 1, 1, time.UTC)
 	y2 := time.Date(2021, 1, 1, 1, 1, 1, 1, time.UTC)
 	y3 := time.Date(2022, 1, 1, 1, 1, 1, 1, time.UTC)
@@ -31,14 +33,41 @@ func TestTimeDiff(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := TimeDiff(tt.a, tt.b, false); got != tt.want {
+			if got := TimeDiff(tt.a, tt.b); got != tt.want {
 				t.Errorf("TimeDiff() = %v, want %v", got, tt.want)
 			}
 
 			compactVersion := strings.ReplaceAll(tt.want, " ", "")
-			if got := TimeDiff(tt.a, tt.b, true); got != compactVersion {
+			if got := TimeDiff(tt.a, tt.b, func(opts *TimeDiffOpts) {
+				opts.Compact = true
+			}); got != compactVersion {
 				t.Errorf("TimeDiff() = %v, want %v", got, compactVersion)
 			}
 		})
 	}
+}
+
+func TestTimeDiffEpoch(t *testing.T) {
+	t.Run("Normal", func(t *testing.T) {
+		a := time.Date(2021, 1, 1, 1, 1, 1, 1, time.UTC)
+		b := time.Date(2022, 3, 5, 10, 22, 4, 1, time.UTC)
+
+		tdOff := TimeDiff(a, b)
+		require.Equal(t, "1y 63d 9h 21m 3s", tdOff)
+
+		tdOn := TimeDiff(a, b, func(opts *TimeDiffOpts) {
+			opts.EpochRounding = true
+		})
+		require.Equal(t, "1y 63d", tdOn)
+	})
+	t.Run("FewerTokens", func(t *testing.T) {
+		a := time.Date(2021, 1, 1, 1, 1, 1, 1, time.UTC)
+		b := time.Date(2023, 1, 1, 1, 1, 1, 1, time.UTC)
+
+		tdOn := TimeDiff(a, b, func(opts *TimeDiffOpts) {
+			opts.EpochRounding = true
+		})
+		require.Equal(t, "2y", tdOn)
+
+	})
 }
