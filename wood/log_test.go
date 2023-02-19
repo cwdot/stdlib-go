@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestPrefix(t *testing.T) {
+func TestPrefixClassic(t *testing.T) {
 	Init(logrus.InfoLevel)
 
 	var expectedLevel int
@@ -22,6 +22,35 @@ func TestPrefix(t *testing.T) {
 		expectedLevel--
 		Reset()
 		Info("Pop: ", expectedLevel, "  ", fmt.Sprintf("buff=`%s`", buff))
+		require.Equal(t, expectedLevel, len(buff))
+	}
+
+	add("a")
+	add("b")
+	add("c")
+	pop()
+
+	add("d")
+	add("e")
+	pop()
+
+	add("f")
+}
+
+func TestPrefixFormatted(t *testing.T) {
+	Init(logrus.InfoLevel)
+
+	var expectedLevel int
+	add := func(p string) {
+		expectedLevel++
+		Prefix(p)
+		Infof("Add: %d  %s", expectedLevel, fmt.Sprintf("buff=`%s`", buff))
+		require.Equal(t, expectedLevel, len(buff))
+	}
+	pop := func() {
+		expectedLevel--
+		Reset()
+		Infof("Pop: %d  %s", expectedLevel, fmt.Sprintf("buff=`%s`", buff))
 		require.Equal(t, expectedLevel, len(buff))
 	}
 
