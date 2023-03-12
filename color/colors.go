@@ -4,8 +4,8 @@ import "fmt"
 
 type Color string
 
-func It(c Color, text string) string {
-	return fmt.Sprintf("%s%s%s", c, text, Reset)
+func It(c Color, text any) string {
+	return fmt.Sprintf("%s%v%s", c, text, Reset)
 }
 
 const (
