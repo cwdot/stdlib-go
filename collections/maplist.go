@@ -74,3 +74,15 @@ func (km *MapList[T]) Size() int {
 
 	return len(km.m)
 }
+
+// Copy creates a copy
+func (km *MapList[T]) Copy() map[string][]T {
+	km.mu.Lock()
+	defer km.mu.Unlock()
+
+	items := make(map[string][]T, len(km.m))
+	for k, v := range km.m {
+		items[k] = v
+	}
+	return items
+}
