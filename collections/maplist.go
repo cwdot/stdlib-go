@@ -67,12 +67,35 @@ func (km *MapList[T]) GetList(key string) ([]T, bool) {
 	return nil, false
 }
 
-// Size
+// Count the number of items in the list for provided key
+func (km *MapList[T]) Count(key string) int {
+	km.mu.Lock()
+	defer km.mu.Unlock()
+
+	if outer, ok := km.m[key]; ok {
+		return len(outer)
+	}
+	return 0
+}
+
+// Size returns the total number of entries in the map
 func (km *MapList[T]) Size() int {
 	km.mu.Lock()
 	defer km.mu.Unlock()
 
 	return len(km.m)
+}
+
+// GrandSize returns the total number of tracked items across the map and sublists
+func (km *MapList[T]) GrandSize() int {
+	km.mu.Lock()
+	defer km.mu.Unlock()
+
+	count := 0
+	for _, v := range km.m {
+		count += len(v)
+	}
+	return count
 }
 
 // Copy creates a copy
