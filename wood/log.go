@@ -26,8 +26,9 @@ func decorate(args ...interface{}) []any {
 	c := make([]any, 0, len(args)+1)
 
 	f, a := createLabel()
-	c = append(c, fmt.Sprintf(f, a...))
-
+	if f != "" {
+		c = append(c, fmt.Sprintf(f, a...))
+	}
 	c = append(c, fmt.Sprint(args...))
 	return c
 }
@@ -41,8 +42,10 @@ func decorateF(level logrus.Level, args []interface{}, fn func(format string, ar
 	arguments := make([]any, 0, len(args)+1)
 
 	f, a := createLabel()
-	formats = append(formats, f)
-	arguments = append(arguments, a...)
+	if f != "" {
+		formats = append(formats, f)
+		arguments = append(arguments, a...)
+	}
 
 	formats = append(formats, args[0].(string))
 	arguments = append(arguments, args[1:]...)

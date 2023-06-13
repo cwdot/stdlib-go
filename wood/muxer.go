@@ -8,19 +8,19 @@ import (
 func Log(level logrus.Level, args ...interface{}) {
 	switch level {
 	case logrus.TraceLevel:
-		Trace(args)
+		Trace(args...)
 	case logrus.DebugLevel:
-		Debug(args)
+		Debug(args...)
 	case logrus.InfoLevel:
-		Info(args)
+		Info(args...)
 	case logrus.WarnLevel:
-		Warn(args)
+		Warn(args...)
 	case logrus.ErrorLevel:
-		Error(args)
+		Error(args...)
 	case logrus.FatalLevel:
-		Fatal(args)
+		Fatal(args...)
 	case logrus.PanicLevel:
-		Panic(args)
+		Panic(args...)
 	}
 }
 
@@ -28,19 +28,19 @@ func Log(level logrus.Level, args ...interface{}) {
 func Logln(level logrus.Level, args ...interface{}) {
 	switch level {
 	case logrus.TraceLevel:
-		Traceln(args)
+		Traceln(args...)
 	case logrus.DebugLevel:
-		Debugln(args)
+		Debugln(args...)
 	case logrus.InfoLevel:
-		Infoln(args)
+		Infoln(args...)
 	case logrus.WarnLevel:
-		Warnln(args)
+		Warnln(args...)
 	case logrus.ErrorLevel:
-		Errorln(args)
+		Errorln(args...)
 	case logrus.FatalLevel:
-		Fatalln(args)
+		Fatalln(args...)
 	case logrus.PanicLevel:
-		Panicln(args)
+		Panicln(args...)
 	}
 }
 
