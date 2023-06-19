@@ -12,7 +12,7 @@ var (
 	label       string
 	buff        string
 	stack       []string
-	prefixLevel map[string]logrus.Level
+	prefixLevel map[string]Level
 
 	// std is the name of the standard logger in stdlib `log`
 	std = logrus.New()
@@ -33,7 +33,7 @@ func decorate(args ...interface{}) []any {
 	return c
 }
 
-func decorateF(level logrus.Level, args []interface{}, fn func(format string, args []any)) {
+func decorateF(level Level, args []interface{}, fn func(format string, args []any)) {
 	if ignored(level) {
 		return
 	}
@@ -104,7 +104,7 @@ func refreshLabel() {
 	buff = strings.Repeat(" ", len(stack))
 }
 
-func ignored(action logrus.Level) bool {
+func ignored(action Level) bool {
 	if label == "" {
 		return false
 	}
@@ -115,11 +115,11 @@ func ignored(action logrus.Level) bool {
 	return val < action
 }
 
-func PrefixLevel(label string, level logrus.Level) {
+func PrefixLevel(label string, level Level) {
 	prefixLevel[label] = level
 }
 
-func Init(level logrus.Level) {
+func Init(level Level) {
 	std.SetFormatter(&logrus.TextFormatter{
 		ForceColors: true,
 		//DisableColors: !colors,
@@ -136,7 +136,7 @@ func Init(level logrus.Level) {
 		//QuoteEmptyFields:          false,
 		//FieldMap:                  nil,
 	})
-	std.SetLevel(level)
+	std.SetLevel(logrus.Level(level))
 	stack = make([]string, 0, 5)
-	prefixLevel = make(map[string]logrus.Level)
+	prefixLevel = make(map[string]Level)
 }

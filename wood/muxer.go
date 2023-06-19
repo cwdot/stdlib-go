@@ -5,7 +5,7 @@ import (
 )
 
 // Log logs a message the provided text using the provided log level
-func Log(level logrus.Level, args ...interface{}) {
+func Log(level Level, args ...interface{}) {
 	switch level {
 	case logrus.TraceLevel:
 		Trace(args...)
@@ -25,7 +25,7 @@ func Log(level logrus.Level, args ...interface{}) {
 }
 
 // Logln logs a message with newline the provided log level
-func Logln(level logrus.Level, args ...interface{}) {
+func Logln(level Level, args ...interface{}) {
 	switch level {
 	case logrus.TraceLevel:
 		Traceln(args...)
@@ -45,7 +45,7 @@ func Logln(level logrus.Level, args ...interface{}) {
 }
 
 // Logf logs a message with formatting using the provided log level
-func Logf(level logrus.Level, args ...interface{}) {
+func Logf(level Level, args ...interface{}) {
 	decorateF(level, args, func(format string, args []any) {
 		std.Infof(format, args...)
 	})
