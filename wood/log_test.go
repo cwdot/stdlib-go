@@ -4,12 +4,11 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 )
 
 func TestPrefixClassic(t *testing.T) {
-	Init(logrus.InfoLevel)
+	Init(InfoLevel)
 
 	var expectedLevel int
 	add := func(p string) {
@@ -38,7 +37,7 @@ func TestPrefixClassic(t *testing.T) {
 }
 
 func TestPrefixFormatted(t *testing.T) {
-	Init(logrus.InfoLevel)
+	Init(InfoLevel)
 
 	var expectedLevel int
 	add := func(p string) {
@@ -67,7 +66,7 @@ func TestPrefixFormatted(t *testing.T) {
 }
 
 func TestPrint(t *testing.T) {
-	Init(logrus.InfoLevel)
+	Init(InfoLevel)
 
 	Printf("test %s", "f")
 	Println("test", "f")

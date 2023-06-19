@@ -1,51 +1,47 @@
 package wood
 
-import (
-	"github.com/sirupsen/logrus"
-)
-
 // Log logs a message the provided text using the provided log level
-func Log(level logrus.Level, args ...interface{}) {
+func Log(level Level, args ...interface{}) {
 	switch level {
-	case logrus.TraceLevel:
+	case TraceLevel:
 		Trace(args...)
-	case logrus.DebugLevel:
+	case DebugLevel:
 		Debug(args...)
-	case logrus.InfoLevel:
+	case InfoLevel:
 		Info(args...)
-	case logrus.WarnLevel:
+	case WarnLevel:
 		Warn(args...)
-	case logrus.ErrorLevel:
+	case ErrorLevel:
 		Error(args...)
-	case logrus.FatalLevel:
+	case FatalLevel:
 		Fatal(args...)
-	case logrus.PanicLevel:
+	case PanicLevel:
 		Panic(args...)
 	}
 }
 
 // Logln logs a message with newline the provided log level
-func Logln(level logrus.Level, args ...interface{}) {
+func Logln(level Level, args ...interface{}) {
 	switch level {
-	case logrus.TraceLevel:
+	case TraceLevel:
 		Traceln(args...)
-	case logrus.DebugLevel:
+	case DebugLevel:
 		Debugln(args...)
-	case logrus.InfoLevel:
+	case InfoLevel:
 		Infoln(args...)
-	case logrus.WarnLevel:
+	case WarnLevel:
 		Warnln(args...)
-	case logrus.ErrorLevel:
+	case ErrorLevel:
 		Errorln(args...)
-	case logrus.FatalLevel:
+	case FatalLevel:
 		Fatalln(args...)
-	case logrus.PanicLevel:
+	case PanicLevel:
 		Panicln(args...)
 	}
 }
 
 // Logf logs a message with formatting using the provided log level
-func Logf(level logrus.Level, args ...interface{}) {
+func Logf(level Level, args ...interface{}) {
 	decorateF(level, args, func(format string, args []any) {
 		std.Infof(format, args...)
 	})

@@ -25,18 +25,18 @@ func SetReportCaller(include bool) {
 }
 
 // SetLevel sets the standard logger level.
-func SetLevel(level logrus.Level) {
-	std.SetLevel(level)
+func SetLevel(level Level) {
+	std.SetLevel(logrus.Level(level))
 }
 
 // GetLevel returns the standard logger level.
-func GetLevel() logrus.Level {
-	return std.GetLevel()
+func GetLevel() Level {
+	return Level(std.GetLevel())
 }
 
 // IsLevelEnabled checks if the log level of the standard logger is greater than the level param
-func IsLevelEnabled(level logrus.Level) bool {
-	return std.IsLevelEnabled(level)
+func IsLevelEnabled(level Level) bool {
+	return std.IsLevelEnabled(logrus.Level(level))
 }
 
 // AddHook adds a hook to the standard logger hooks.
@@ -84,7 +84,7 @@ func WithTime(t time.Time) *logrus.Entry {
 
 // Trace logs a message at level Trace on the standard logger.
 func Trace(args ...interface{}) {
-	if ignored(logrus.TraceLevel) {
+	if ignored(TraceLevel) {
 		return
 	}
 	std.Trace(decorate(args...)...)
@@ -92,7 +92,7 @@ func Trace(args ...interface{}) {
 
 // Debug logs a message at level Debug on the standard logger.
 func Debug(args ...interface{}) {
-	if ignored(logrus.DebugLevel) {
+	if ignored(DebugLevel) {
 		return
 	}
 	std.Debug(decorate(args...)...)
@@ -100,7 +100,7 @@ func Debug(args ...interface{}) {
 
 // Print logs a message at level Info on the standard logger.
 func Print(args ...interface{}) {
-	if ignored(logrus.InfoLevel) {
+	if ignored(InfoLevel) {
 		return
 	}
 	std.Print(decorate(args...)...)
@@ -108,7 +108,7 @@ func Print(args ...interface{}) {
 
 // Info logs a message at level Info on the standard logger.
 func Info(args ...interface{}) {
-	if ignored(logrus.InfoLevel) {
+	if ignored(InfoLevel) {
 		return
 	}
 	std.Info(decorate(args...)...)
@@ -116,7 +116,7 @@ func Info(args ...interface{}) {
 
 // Warn logs a message at level Warn on the standard logger.
 func Warn(args ...interface{}) {
-	if ignored(logrus.WarnLevel) {
+	if ignored(WarnLevel) {
 		return
 	}
 	std.Warn(decorate(args...)...)
@@ -124,7 +124,7 @@ func Warn(args ...interface{}) {
 
 // Warning logs a message at level Warn on the standard logger.
 func Warning(args ...interface{}) {
-	if ignored(logrus.WarnLevel) {
+	if ignored(WarnLevel) {
 		return
 	}
 	std.Warning(decorate(args...)...)
@@ -147,63 +147,63 @@ func Fatal(args ...interface{}) {
 
 // Tracef logs a message with formatting at level Trace on the standard logger.
 func Tracef(args ...interface{}) {
-	decorateF(logrus.TraceLevel, args, func(format string, args []any) {
+	decorateF(TraceLevel, args, func(format string, args []any) {
 		std.Tracef(format, args...)
 	})
 }
 
 // Debugf logs a message with formatting at level Debug on the standard logger.
 func Debugf(args ...interface{}) {
-	decorateF(logrus.InfoLevel, args, func(format string, args []any) {
+	decorateF(InfoLevel, args, func(format string, args []any) {
 		std.Debugf(format, args...)
 	})
 }
 
 // Printf logs a message with formatting at level Info on the standard logger.
 func Printf(args ...interface{}) {
-	decorateF(logrus.InfoLevel, args, func(format string, args []any) {
+	decorateF(InfoLevel, args, func(format string, args []any) {
 		std.Printf(format, args...)
 	})
 }
 
 // Infof logs a message with formatting at level Info on the standard logger.
 func Infof(args ...interface{}) {
-	decorateF(logrus.InfoLevel, args, func(format string, args []any) {
+	decorateF(InfoLevel, args, func(format string, args []any) {
 		std.Infof(format, args...)
 	})
 }
 
 // Warnf logs a message at level Info on the standard logger.
 func Warnf(args ...interface{}) {
-	decorateF(logrus.WarnLevel, args, func(format string, args []any) {
+	decorateF(WarnLevel, args, func(format string, args []any) {
 		std.Warnf(format, args...)
 	})
 }
 
 // Errorf logs a message with formatting at level Error on the standard logger.
 func Errorf(args ...interface{}) {
-	decorateF(logrus.ErrorLevel, args, func(format string, args []any) {
+	decorateF(ErrorLevel, args, func(format string, args []any) {
 		std.Errorf(format, args...)
 	})
 }
 
 // Panicf logs a message with formatting at level Panic on the standard logger.
 func Panicf(args ...interface{}) {
-	decorateF(logrus.PanicLevel, args, func(format string, args []any) {
+	decorateF(PanicLevel, args, func(format string, args []any) {
 		std.Panicf(format, args...)
 	})
 }
 
 // Fatalf logs a message with formatting at level Fatal on the standard logger.
 func Fatalf(args ...interface{}) {
-	decorateF(logrus.FatalLevel, args, func(format string, args []any) {
+	decorateF(FatalLevel, args, func(format string, args []any) {
 		std.Fatalf(format, args...)
 	})
 }
 
 // Traceln logs a message at level Trace on the standard logger.
 func Traceln(args ...interface{}) {
-	if ignored(logrus.TraceLevel) {
+	if ignored(TraceLevel) {
 		return
 	}
 	std.Traceln(decorate(args...)...)
@@ -211,7 +211,7 @@ func Traceln(args ...interface{}) {
 
 // Debugln logs a message at level Debug on the standard logger.
 func Debugln(args ...interface{}) {
-	if ignored(logrus.DebugLevel) {
+	if ignored(DebugLevel) {
 		return
 	}
 	std.Debugln(decorate(args...)...)
@@ -219,7 +219,7 @@ func Debugln(args ...interface{}) {
 
 // Println logs a message at level Info on the standard logger.
 func Println(args ...interface{}) {
-	if ignored(logrus.InfoLevel) {
+	if ignored(InfoLevel) {
 		return
 	}
 	std.Println(decorate(args...)...)
@@ -227,7 +227,7 @@ func Println(args ...interface{}) {
 
 // Infoln logs a message at level Info on the standard logger.
 func Infoln(args ...interface{}) {
-	if ignored(logrus.InfoLevel) {
+	if ignored(InfoLevel) {
 		return
 	}
 	std.Infoln(decorate(args...)...)
@@ -235,7 +235,7 @@ func Infoln(args ...interface{}) {
 
 // Warnln logs a message at level Warn on the standard logger.
 func Warnln(args ...interface{}) {
-	if ignored(logrus.WarnLevel) {
+	if ignored(WarnLevel) {
 		return
 	}
 	std.Warnln(decorate(args...)...)
@@ -243,7 +243,7 @@ func Warnln(args ...interface{}) {
 
 // Warningln logs a message at level Warn on the standard logger.
 func Warningln(args ...interface{}) {
-	if ignored(logrus.WarnLevel) {
+	if ignored(WarnLevel) {
 		return
 	}
 	std.Warningln(decorate(args...)...)
