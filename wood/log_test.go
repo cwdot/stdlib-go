@@ -65,6 +65,32 @@ func TestPrefixFormatted(t *testing.T) {
 	add("f")
 }
 
+func TestIndent(t *testing.T) {
+	Init(InfoLevel)
+
+	Increment()
+	Printf("test %s", "f")
+	Increment()
+	Println("test", "f")
+
+	// should reset the text indention to 0
+	Prefix("Reset1")
+	Printf("test %s", "1")
+	Println("test", "2")
+	Increment()
+	Increment()
+	Println("test", "f")
+	Increment()
+	Println("test", "increment")
+	Decrement()
+	Println("test", "decremented")
+	Reset()
+
+	Prefix("Reset2")
+	Printf("test %s", "f")
+	Println("reset", "f")
+}
+
 func TestPrint(t *testing.T) {
 	Init(InfoLevel)
 

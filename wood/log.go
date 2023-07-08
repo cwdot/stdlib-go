@@ -5,13 +5,20 @@ import (
 	"strings"
 
 	"github.com/sirupsen/logrus"
-	"golang.org/x/exp/slices"
 )
 
 var (
-	label       string
-	buff        string
-	stack       []string
+	// label Text shown
+	label string
+	// buff cache of spaces in front of the label; computed from stack
+	buff string
+
+	// stack of labels
+	stack []string
+	// indent custom indention for a particular prefix; resets when the label changes
+	indent int
+
+	// prefixLevel Sets the logging level for specific prefixes
 	prefixLevel map[string]Level
 
 	// std is the name of the standard logger in stdlib `log`
@@ -43,7 +50,8 @@ func decorateF(level Level, args []interface{}, fn func(format string, args []an
 
 	f, a := createLabel()
 	if f != "" {
-		formats = append(formats, f)
+		// add extra space to align with decorate. log adds space between the []any elements
+		formats = append(formats, f+" ")
 		arguments = append(arguments, a...)
 	}
 
@@ -51,72 +59,6 @@ func decorateF(level Level, args []interface{}, fn func(format string, args []an
 	arguments = append(arguments, args[1:]...)
 
 	fn(strings.Join(formats, ""), arguments)
-}
-
-func createLabel() (string, []any) {
-	if label == "" {
-		return "", []any{}
-	}
-
-	var trimmed string
-	var whitespace string
-	m := len(label) + len(buff)
-	if m < pad {
-		trimmed = label
-		m = pad - m
-		if m > 0 {
-			whitespace = strings.Repeat(" ", m)
-		}
-	} else {
-		trimmed = label[0 : pad-len(buff)]
-		whitespace = ">"
-	}
-
-	format := "%s\x1b[%dm%s\x1b[0m%s"
-	arguments := []any{buff, yellow, trimmed, whitespace}
-	return format, arguments
-}
-
-func Prefix(newPrefix string) {
-	label = newPrefix
-	stack = append(stack, label)
-	refreshLabel()
-}
-
-func Reset() {
-	l := len(stack)
-	if len(stack) == 0 {
-		label = ""
-		refreshLabel()
-		return
-	}
-	stack = slices.Delete(stack, l-1, l)
-	l = len(stack)
-	if l == 0 {
-		label = ""
-	} else {
-		label = stack[l-1]
-	}
-	refreshLabel()
-}
-
-func refreshLabel() {
-	buff = strings.Repeat(" ", len(stack))
-}
-
-func ignored(action Level) bool {
-	if label == "" {
-		return false
-	}
-	val, ok := prefixLevel[label]
-	if !ok {
-		return false
-	}
-	return val < action
-}
-
-func PrefixLevel(label string, level Level) {
-	prefixLevel[label] = level
 }
 
 func Init(level Level) {
