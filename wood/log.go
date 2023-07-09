@@ -4,22 +4,24 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/porfirion/trie"
 	"github.com/sirupsen/logrus"
 )
 
 var (
-	// label Text shown
-	label string
-	// buff cache of spaces in front of the label; computed from stack
-	buff string
+	currentId string
+	// currentDisplay Text shown
+	currentDisplay string
+	// displayWhitespace cache of spaces in front of the currentDisplay; computed from stack
+	displayWhitespace string
 
 	// stack of labels
-	stack []string
-	// indent custom indention for a particular prefix; resets when the label changes
+	stack []*logStack
+	// indent custom indention for a particular prefix; resets when the currentDisplay changes
 	indent int
 
 	// prefixLevel Sets the logging level for specific prefixes
-	prefixLevel map[string]Level
+	prefixes trie.Trie[Level]
 
 	// std is the name of the standard logger in stdlib `log`
 	std = logrus.New()
@@ -79,6 +81,5 @@ func Init(level Level) {
 		//FieldMap:                  nil,
 	})
 	std.SetLevel(logrus.Level(level))
-	stack = make([]string, 0, 5)
-	prefixLevel = make(map[string]Level)
+	stack = make([]*logStack, 0, 5)
 }

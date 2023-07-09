@@ -35,8 +35,8 @@ func (km *DoubleMap) String() string {
 
 // Add saves item; creates path
 func (km *DoubleMap) Add(parent string, key string, value string) bool {
-	wood.Prefix("Add")
-	defer wood.Reset()
+	wood.Push("Add")
+	defer wood.Pop()
 
 	km.mu.Lock()
 	defer km.mu.Unlock()

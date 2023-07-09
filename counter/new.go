@@ -35,8 +35,8 @@ func (km *CounterMap) String() string {
 
 // Add saves item; creates path
 func (km *CounterMap) Add(key string, increment int) bool {
-	wood.Prefix("Add")
-	defer wood.Reset()
+	wood.Push("Add")
+	defer wood.Pop()
 
 	km.mu.Lock()
 	defer km.mu.Unlock()

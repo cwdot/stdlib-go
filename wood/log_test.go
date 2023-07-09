@@ -7,93 +7,67 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestPrefixClassic(t *testing.T) {
+func TestPrefix(t *testing.T) {
 	Init(InfoLevel)
+	const expectedF = "%s\x1b[%dm%s\x1b[0m%s test %s"
 
-	var expectedLevel int
-	add := func(p string) {
-		expectedLevel++
-		Prefix(p)
-		Info("Add: ", expectedLevel, "  ", fmt.Sprintf("buff=`%s`", buff))
-		require.Equal(t, expectedLevel, len(buff))
-	}
-	pop := func() {
-		expectedLevel--
-		Reset()
-		Info("Pop: ", expectedLevel, "  ", fmt.Sprintf("buff=`%s`", buff))
-		require.Equal(t, expectedLevel, len(buff))
-	}
+	var f string
+	var args []any
 
-	add("a")
-	add("b")
-	add("c")
-	pop()
+	Push("a")
+	f, args = TLogF("test %s", "x")
+	require.Equal(t, expectedF, f)
+	require.Equal(t, []any{"", 33, "a", "                                  ", "x"}, args)
 
-	add("d")
-	add("e")
-	pop()
+	Push("a.b")
+	f, args = TLogF("test %s", "y")
+	require.Equal(t, expectedF, f)
+	require.Equal(t, []any{" ", 33, "b", "                                 ", "y"}, args)
 
-	add("f")
+	fmt.Println(currentDisplay, currentId, displayWhitespace)
+
+	Push("a.b.c")
+	f, args = TLogF("test %s", "z")
+	require.Equal(t, expectedF, f)
+	require.Equal(t, []any{"  ", 33, "c", "                                ", "z"}, args)
+
+	Pop()
+	f, args = TLogF("test %s", "decremented")
+	require.Equal(t, expectedF, f)
+	require.Equal(t, []any{" ", 33, "b", "                                 ", "decremented"}, args)
+
+	Pop()
+
+	f, args = TLogF("test %s", "decremented")
+	require.Equal(t, expectedF, f)
+	require.Equal(t, []any{"", 33, "a", "                                  ", "decremented"}, args)
 }
 
-func TestPrefixFormatted(t *testing.T) {
+func Test_decorateF(t *testing.T) {
 	Init(InfoLevel)
 
-	var expectedLevel int
-	add := func(p string) {
-		expectedLevel++
-		Prefix(p)
-		Infof("Add: %d  %s", expectedLevel, fmt.Sprintf("buff=`%s`", buff))
-		require.Equal(t, expectedLevel, len(buff))
-	}
-	pop := func() {
-		expectedLevel--
-		Reset()
-		Infof("Pop: %d  %s", expectedLevel, fmt.Sprintf("buff=`%s`", buff))
-		require.Equal(t, expectedLevel, len(buff))
-	}
-
-	add("a")
-	add("b")
-	add("c")
-	pop()
-
-	add("d")
-	add("e")
-	pop()
-
-	add("f")
+	f, args := TLogF("test %s", "f")
+	require.Equal(t, "test %s", f)
+	require.Equal(t, []any{"f"}, args)
 }
 
-func TestIndent(t *testing.T) {
+func Test_decorate(t *testing.T) {
 	Init(InfoLevel)
 
-	Increment()
-	Printf("test %s", "f")
-	Increment()
-	Println("test", "f")
-
-	// should reset the text indention to 0
-	Prefix("Reset1")
-	Printf("test %s", "1")
-	Println("test", "2")
-	Increment()
-	Increment()
-	Println("test", "f")
-	Increment()
-	Println("test", "increment")
-	Decrement()
-	Println("test", "decremented")
-	Reset()
-
-	Prefix("Reset2")
-	Printf("test %s", "f")
-	Println("reset", "f")
+	args := TLog("test", "f")
+	require.Equal(t, []any{"testf"}, args)
 }
 
-func TestPrint(t *testing.T) {
-	Init(InfoLevel)
+func TLogF(arguments ...interface{}) (string, []any) {
+	var outFormat string
+	var outArgs []any
+	decorateF(InfoLevel, arguments, func(format string, args []any) {
+		outFormat = format
+		outArgs = args
+	})
+	return outFormat, outArgs
+}
 
-	Printf("test %s", "f")
-	Println("test", "f")
+func TLog(arguments ...interface{}) []any {
+	return decorate(arguments...)
 }
