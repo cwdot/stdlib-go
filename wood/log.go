@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	currentId string
+	currentCanonical string
 	// currentDisplay Text shown
 	currentDisplay string
 	// displayWhitespace cache of spaces in front of the currentDisplay; computed from stack
@@ -19,6 +19,9 @@ var (
 	stack []*logStack
 	// indent custom indention for a particular prefix; resets when the currentDisplay changes
 	indent int
+
+	// level for any member of the stack
+	componentLevel map[string]Level
 
 	// prefixLevel Sets the logging level for specific prefixes
 	prefixes trie.Trie[Level]
@@ -82,4 +85,8 @@ func Init(level Level) {
 	})
 	std.SetLevel(logrus.Level(level))
 	stack = make([]*logStack, 0, 5)
+	componentLevel = make(map[string]Level)
+	currentDisplay = ""
+	currentCanonical = ""
+	displayWhitespace = ""
 }

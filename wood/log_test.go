@@ -1,15 +1,15 @@
 package wood
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
-func TestPrefix(t *testing.T) {
+const expectedF = "%s\x1b[%dm%s\x1b[0m%s test %s"
+
+func TestSinglePrefix(t *testing.T) {
 	Init(InfoLevel)
-	const expectedF = "%s\x1b[%dm%s\x1b[0m%s test %s"
 
 	var f string
 	var args []any
@@ -19,14 +19,12 @@ func TestPrefix(t *testing.T) {
 	require.Equal(t, expectedF, f)
 	require.Equal(t, []any{"", 33, "a", "                                  ", "x"}, args)
 
-	Push("a.b")
+	Push("b")
 	f, args = TLogF("test %s", "y")
 	require.Equal(t, expectedF, f)
 	require.Equal(t, []any{" ", 33, "b", "                                 ", "y"}, args)
 
-	fmt.Println(currentDisplay, currentId, displayWhitespace)
-
-	Push("a.b.c")
+	Push("c")
 	f, args = TLogF("test %s", "z")
 	require.Equal(t, expectedF, f)
 	require.Equal(t, []any{"  ", 33, "c", "                                ", "z"}, args)
@@ -43,12 +41,41 @@ func TestPrefix(t *testing.T) {
 	require.Equal(t, []any{"", 33, "a", "                                  ", "decremented"}, args)
 }
 
-func Test_decorateF(t *testing.T) {
+func TestMultiplePrefixes(t *testing.T) {
 	Init(InfoLevel)
 
-	f, args := TLogF("test %s", "f")
+	var f string
+	var args []any
+
+	f, args = TLogF("test %s", "x")
 	require.Equal(t, "test %s", f)
-	require.Equal(t, []any{"f"}, args)
+	require.Equal(t, []any{"x"}, args)
+
+	Push("a")
+	f, args = TLogF("test %s", "x")
+	require.Equal(t, expectedF, f)
+	require.Equal(t, []any{"", 33, "a", "                                  ", "x"}, args)
+
+	Push("a.b")
+	f, args = TLogF("test %s", "y")
+	require.Equal(t, expectedF, f)
+	require.Equal(t, []any{"  ", 33, "b", "                                ", "y"}, args)
+
+	Push("a.b.c")
+	f, args = TLogF("test %s", "z")
+	require.Equal(t, expectedF, f)
+	require.Equal(t, []any{"     ", 33, "c", "                             ", "z"}, args)
+
+	Pop()
+	f, args = TLogF("test %s", "decremented")
+	require.Equal(t, expectedF, f)
+	require.Equal(t, []any{"    ", 33, "b", "                              ", "decremented"}, args)
+
+	Pop()
+
+	f, args = TLogF("test %s", "decremented")
+	require.Equal(t, expectedF, f)
+	require.Equal(t, []any{"   ", 33, "a", "                               ", "decremented"}, args)
 }
 
 func Test_decorate(t *testing.T) {

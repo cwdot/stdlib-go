@@ -1,40 +1,10 @@
 package wood
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
-
-func TestPrefixClassic(t *testing.T) {
-	Init(InfoLevel)
-
-	var expectedLevel int
-	add := func(p string) {
-		expectedLevel++
-		Push(p)
-		Info("Add: ", expectedLevel, "  ", fmt.Sprintf("buff=`%s`", displayWhitespace))
-		require.Equal(t, expectedLevel, len(displayWhitespace))
-	}
-	pop := func() {
-		expectedLevel--
-		Pop()
-		Info("Pop: ", expectedLevel, "  ", fmt.Sprintf("buff=`%s`", displayWhitespace))
-		require.Equal(t, expectedLevel, len(displayWhitespace))
-	}
-
-	add("a")
-	add("b")
-	add("c")
-	pop()
-
-	add("d")
-	add("e")
-	pop()
-
-	add("f")
-}
 
 func TestPrefixFormatted(t *testing.T) {
 	Init(InfoLevel)
@@ -43,26 +13,46 @@ func TestPrefixFormatted(t *testing.T) {
 	add := func(p string) {
 		expectedLevel++
 		Push(p)
-		Infof("Add: %d  %s", expectedLevel, fmt.Sprintf("buff=`%s`", displayWhitespace))
-		require.Equal(t, expectedLevel, len(displayWhitespace))
 	}
 	pop := func() {
-		expectedLevel--
+		if expectedLevel > 0 {
+			expectedLevel--
+		}
 		Pop()
-		Infof("Pop: %d  %s", expectedLevel, fmt.Sprintf("buff=`%s`", displayWhitespace))
-		require.Equal(t, expectedLevel, len(displayWhitespace))
+	}
+	check := func(verb string, canonical string, cd string, dws string) {
+		testLevel := expectedLevel - 1
+		if testLevel < 0 {
+			testLevel = 0
+		}
+		Infof("%s: %d cid=`%s` cdisplay=`%s` dws=`%s`", verb, expectedLevel, currentCanonical, currentDisplay, displayWhitespace)
+		Info(verb, expectedLevel, currentCanonical, currentDisplay, displayWhitespace)
+		require.Equal(t, testLevel, len(displayWhitespace))
+		require.Equal(t, canonical, currentCanonical)
+		require.Equal(t, cd, currentDisplay)
+		require.Equal(t, dws, displayWhitespace)
 	}
 
 	add("a")
+	check("Add", "a", "a", "")
+
 	add("b")
+	check("Add", "a.b", "b", " ")
+
 	add("c")
-	pop()
+	check("Add", "a.b.c", "c", "  ")
 
-	add("d")
-	add("e")
 	pop()
+	check("Pop", "a.b", "b", " ")
 
-	add("f")
+	pop()
+	check("Pop", "a", "a", "")
+
+	pop()
+	check("Pop", "", "", "")
+
+	pop()
+	check("Pop", "", "", "")
 }
 
 func TestIndent(t *testing.T) {

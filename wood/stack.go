@@ -1,15 +1,39 @@
 package wood
 
 import (
+	"fmt"
 	"strings"
 
 	"golang.org/x/exp/slices"
 )
 
+type logStack struct {
+	// complete ID
+	CanonicalID string
+	// First N-1
+	FrontID string
+	// Last 1
+	LastID string
+	// Text being shown
+	Display string
+}
+
+func (ls *logStack) String() string {
+	return fmt.Sprintf("{CanonicalID=`%s` LastID=`%s` Display=`%s`}", ls.CanonicalID, ls.LastID, ls.Display)
+}
+
 func Push(name string) func() {
-	ls := splitName(name)
+	for _, part := range strings.Split(name, ".") {
+		can := computeCanonical(name)
+		ls := &logStack{
+			CanonicalID: can,
+			LastID:      part,
+			Display:     part,
+		}
+		stack = append(stack, ls)
+	}
+
 	//currentDisplay = ls.Display
-	stack = append(stack, ls)
 	indent = 0
 	computeLabel()
 
@@ -69,11 +93,34 @@ func computeLabel() {
 	l := len(stack)
 	if l < 1 {
 		currentDisplay = ""
-		currentId = ""
+		currentCanonical = ""
 		displayWhitespace = ""
 	} else {
 		currentDisplay = stack[l-1].Display
-		currentId = stack[l-1].Id
+		currentCanonical = stack[l-1].CanonicalID
 		displayWhitespace = strings.Repeat(" ", len(stack)-1)
 	}
+}
+
+func computeCanonical(extra string) string {
+	if len(stack) == 0 && extra == "" {
+		return ""
+	}
+
+	var b strings.Builder
+	b.Grow(100)
+	if len(stack) > 0 {
+		b.WriteString(stack[0].LastID)
+		for _, s := range stack[1:] {
+			b.WriteString(".")
+			b.WriteString(s.LastID)
+		}
+		if extra != "" {
+			b.WriteString(".")
+			b.WriteString(extra)
+		}
+	} else if extra != "" {
+		b.WriteString(extra)
+	}
+	return b.String()
 }
