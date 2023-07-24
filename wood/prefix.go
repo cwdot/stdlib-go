@@ -1,28 +1,12 @@
 package wood
 
-func ComponentLevel(label string, level Level) {
+func ComponentLevel(level Level, label string) {
 	componentLevel[label] = level
 }
 
-func PrefixLevel(label string, level Level) {
+func PrefixLevel(level Level, label string) {
 	prefixes.PutString(label, level)
 }
-
-//func splitName(name string) *logStack {
-//	dot := strings.LastIndex(name, ".")
-//	if dot == -1 {
-//		return &logStack{
-//			CanonicalID: name,
-//			LastID:      name,
-//			Display:     name,
-//		}
-//	}
-//	return &logStack{
-//		CanonicalID: name,
-//		LastID:      name[dot+1:],
-//		Display:     name[dot+1:],
-//	}
-//}
 
 func ignored(action Level) bool {
 	if currentCanonical == "" {

@@ -56,12 +56,12 @@ func TestMultiplePrefixes(t *testing.T) {
 	require.Equal(t, expectedF, f)
 	require.Equal(t, []any{"", 33, "a", "                                  ", "x"}, args)
 
-	Push("a.b")
+	Push("a", "b")
 	f, args = TLogF("test %s", "y")
 	require.Equal(t, expectedF, f)
 	require.Equal(t, []any{"  ", 33, "b", "                                ", "y"}, args)
 
-	Push("a.b.c")
+	Push("a", "b", "c")
 	f, args = TLogF("test %s", "z")
 	require.Equal(t, expectedF, f)
 	require.Equal(t, []any{"     ", 33, "c", "                             ", "z"}, args)
@@ -76,6 +76,18 @@ func TestMultiplePrefixes(t *testing.T) {
 	f, args = TLogF("test %s", "decremented")
 	require.Equal(t, expectedF, f)
 	require.Equal(t, []any{"   ", 33, "a", "                               ", "decremented"}, args)
+}
+
+func TestLogPrefixPeriods(t *testing.T) {
+	Init(InfoLevel)
+
+	var f string
+	var args []any
+
+	Push("a.b")
+	f, args = TLogF("test %s", "y")
+	require.Equal(t, expectedF, f)
+	require.Equal(t, []any{"", 33, "a.b", "                                ", "y"}, args)
 }
 
 func Test_decorate(t *testing.T) {

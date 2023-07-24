@@ -8,21 +8,33 @@ import (
 
 func TestComponentLevel(t *testing.T) {
 	Init(InfoLevel)
-	PrefixLevel("a.b.c.d", DebugLevel)
+	PrefixLevel(DebugLevel, "a.b.c.d")
 
 	currentCanonical = "a.b.c.d"
 	require.True(t, ignored(InfoLevel))
 
 	currentCanonical = "d"
-	ComponentLevel("d", InfoLevel)
+	ComponentLevel(InfoLevel, "d")
+	require.False(t, ignored(InfoLevel))
+}
+
+func TestComponentPeriodsDoNothing(t *testing.T) {
+	Init(InfoLevel)
+	PrefixLevel(DebugLevel, "a.b.c.d")
+
+	currentCanonical = "a.b.c.d"
+	require.True(t, ignored(InfoLevel))
+
+	currentCanonical = "d"
+	ComponentLevel(InfoLevel, "d")
 	require.False(t, ignored(InfoLevel))
 }
 
 func Test_ignored(t *testing.T) {
-	PrefixLevel("a", ErrorLevel)
-	PrefixLevel("a.b", WarnLevel)
-	PrefixLevel("a.b.c", InfoLevel)
-	PrefixLevel("a.b.c.d", DebugLevel)
+	PrefixLevel(ErrorLevel, "a")
+	PrefixLevel(WarnLevel, "a.b")
+	PrefixLevel(InfoLevel, "a.b.c")
+	PrefixLevel(DebugLevel, "a.b.c.d")
 
 	tests := []struct {
 		name   string

@@ -22,13 +22,13 @@ func (ls *logStack) String() string {
 	return fmt.Sprintf("{CanonicalID=`%s` LastID=`%s` Display=`%s`}", ls.CanonicalID, ls.LastID, ls.Display)
 }
 
-func Push(name string) func() {
-	for _, part := range strings.Split(name, ".") {
+func Push(names ...string) func() {
+	for _, name := range names {
 		can := computeCanonical(name)
 		ls := &logStack{
 			CanonicalID: can,
-			LastID:      part,
-			Display:     part,
+			LastID:      name,
+			Display:     name,
 		}
 		stack = append(stack, ls)
 	}
