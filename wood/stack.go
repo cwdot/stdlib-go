@@ -75,7 +75,7 @@ func createLabel() (string, []any) {
 	m := len(currentDisplay) + len(displayWhitespace)
 	if m < pad {
 		trimmed = currentDisplay
-		m = pad - m + indent
+		m = pad - m + indent - 1
 		if m > 0 {
 			whitespace = strings.Repeat(" ", m)
 		}

@@ -5,7 +5,7 @@ import (
 )
 
 func main() {
-	wood.Init(wood.InfoLevel)
+	wood.Init()
 
 	wood.Printf("test %s", "f")
 	wood.Println("test", "f")

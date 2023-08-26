@@ -7,7 +7,7 @@ import (
 )
 
 func TestPrefixFormatted(t *testing.T) {
-	Init(InfoLevel)
+	Init()
 
 	var expectedLevel int
 	add := func(p string) {
@@ -56,7 +56,7 @@ func TestPrefixFormatted(t *testing.T) {
 }
 
 func TestIndent(t *testing.T) {
-	Init(InfoLevel)
+	Init()
 
 	Increment()
 	Printf("test %s", "f")
@@ -82,7 +82,7 @@ func TestIndent(t *testing.T) {
 }
 
 func TestPrint(t *testing.T) {
-	Init(InfoLevel)
+	Init()
 
 	Printf("test %s", "f")
 	Println("test", "f")

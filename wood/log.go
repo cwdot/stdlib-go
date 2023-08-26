@@ -1,8 +1,7 @@
 package wood
 
 import (
-	"fmt"
-	"strings"
+	"io"
 
 	"github.com/porfirion/trie"
 	"github.com/sirupsen/logrus"
@@ -20,9 +19,6 @@ var (
 	// indent custom indention for a particular prefix; resets when the currentDisplay changes
 	indent int
 
-	// level for any member of the stack
-	componentLevel map[string]Level
-
 	// prefixLevel Sets the logging level for specific prefixes
 	prefixes trie.Trie[Level]
 
@@ -30,43 +26,19 @@ var (
 	std = logrus.New()
 )
 
-const yellow = 33
-
-const pad = 35
-
-func decorate(args ...interface{}) []any {
-	c := make([]any, 0, len(args)+1)
-
-	f, a := createLabel()
-	if f != "" {
-		c = append(c, fmt.Sprintf(f, a...))
+func WithLevel(level Level) func(*Opts) {
+	return func(opts *Opts) {
+		opts.level = level
 	}
-	c = append(c, fmt.Sprint(args...))
-	return c
 }
 
-func decorateF(level Level, args []interface{}, fn func(format string, args []any)) {
-	if ignored(level) {
-		return
-	}
-
-	formats := make([]string, 0, len(args)+1)
-	arguments := make([]any, 0, len(args)+1)
-
-	f, a := createLabel()
-	if f != "" {
-		// add extra space to align with decorate. log adds space between the []any elements
-		formats = append(formats, f+" ")
-		arguments = append(arguments, a...)
-	}
-
-	formats = append(formats, args[0].(string))
-	arguments = append(arguments, args[1:]...)
-
-	fn(strings.Join(formats, ""), arguments)
+type Opts struct {
+	level     Level
+	output    io.Writer
+	formatter logrus.Formatter
 }
 
-func Init(level Level) {
+func Init(opts ...func(opts *Opts)) {
 	std.SetFormatter(&logrus.TextFormatter{
 		ForceColors: true,
 		//DisableColors: !colors,
@@ -83,10 +55,23 @@ func Init(level Level) {
 		//QuoteEmptyFields:          false,
 		//FieldMap:                  nil,
 	})
-	std.SetLevel(logrus.Level(level))
+
+	base := &Opts{level: InfoLevel}
+	for _, opt := range opts {
+		opt(base)
+	}
+	std.SetLevel(logrus.Level(base.level))
+	if base.output != nil {
+		std.SetOutput(base.output)
+	}
+	if base.formatter != nil {
+		std.SetFormatter(base.formatter)
+	}
+
 	stack = make([]*logStack, 0, 5)
-	componentLevel = make(map[string]Level)
 	currentDisplay = ""
 	currentCanonical = ""
 	displayWhitespace = ""
+
+	prefixes = trie.Trie[Level]{}
 }

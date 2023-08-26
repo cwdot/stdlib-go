@@ -3,76 +3,84 @@ package wood
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
+	"github.com/stretchr/testify/assert"
 )
 
-func TestComponentLevel(t *testing.T) {
-	Init(InfoLevel)
-	PrefixLevel(DebugLevel, "a.b.c.d")
-
-	currentCanonical = "a.b.c.d"
-	require.True(t, ignored(InfoLevel))
-
-	currentCanonical = "d"
-	ComponentLevel(InfoLevel, "d")
-	require.False(t, ignored(InfoLevel))
-}
-
-func TestComponentPeriodsDoNothing(t *testing.T) {
-	Init(InfoLevel)
-	PrefixLevel(DebugLevel, "a.b.c.d")
-
-	currentCanonical = "a.b.c.d"
-	require.True(t, ignored(InfoLevel))
-
-	currentCanonical = "d"
-	ComponentLevel(InfoLevel, "d")
-	require.False(t, ignored(InfoLevel))
-}
-
-func Test_ignored(t *testing.T) {
-	PrefixLevel(ErrorLevel, "a")
-	PrefixLevel(WarnLevel, "a.b")
-	PrefixLevel(InfoLevel, "a.b.c")
-	PrefixLevel(DebugLevel, "a.b.c.d")
-
-	tests := []struct {
-		name   string
-		id     string
-		action Level
-		want   bool
-	}{
-		// show everything
-		{"DebugLevel1", "a", DebugLevel, false},
-		{"DebugLevel2", "a.b", DebugLevel, false},
-		{"DebugLevel3", "a.b.c", DebugLevel, false},
-		{"DebugLevel4", "a.b.c.d", DebugLevel, false},
-
-		// a.b.c.d is below requested
-		{"InfoLevel1", "a", InfoLevel, false},
-		{"InfoLevel2", "a.b", InfoLevel, false},
-		{"InfoLevel3", "a.b.c", InfoLevel, false},
-		{"InfoLevel4", "a.b.c.d", InfoLevel, true},
-
-		// a.b.c/d are below requested
-		{"WarnLevel1", "a", WarnLevel, false},
-		{"WarnLevel2", "a.b", WarnLevel, false},
-		{"WarnLevel3", "a.b.c", WarnLevel, true},
-		{"WarnLevel4", "a.b.c.d", WarnLevel, true},
-
-		// a.b/c/d are below requested
-		{"ErrorLevel1", "a", ErrorLevel, false},
-		{"ErrorLevel2", "a.b", ErrorLevel, true},
-		{"ErrorLevel3", "a.b.c", ErrorLevel, true},
-		{"ErrorLevel4", "a.b.c.d", ErrorLevel, true},
+func TestPrefixLevel(t *testing.T) {
+	setup := func(labels ...string) *TestHarness {
+		th := New()
+		Init(WithHarness(th))
+		for _, label := range labels {
+			PrefixLevel(DebugLevel, label)
+		}
+		return th
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			currentCanonical = tt.id
-			if got := ignored(tt.action); got != tt.want {
-				t.Errorf("ignored() = %v, want %v", got, tt.want)
-			}
-			currentCanonical = ""
-		})
+	run := func(labels ...string) {
+		Push("a")
+		Info("test-a")
+		Push("b")
+		Info("test-b")
+		Push("c")
+		Info("test-c")
+		Push("d")
+		Info("test-d")
 	}
+
+	t.Run("NoRestrictions", func(t *testing.T) {
+		th := setup()
+		run()
+		entries := th.Pop()
+		assert.Len(t, entries, 4)
+		th.Assert(t, entries, 0, InfoLevel, "a", "test-a")
+		th.Assert(t, entries, 1, InfoLevel, "b", "test-b")
+		th.Assert(t, entries, 2, InfoLevel, "c", "test-c")
+		th.Assert(t, entries, 3, InfoLevel, "d", "test-d")
+	})
+	t.Run("RestrictA", func(t *testing.T) {
+		th := setup("a")
+		run()
+		entries := th.Pop()
+		assert.Len(t, entries, 0)
+	})
+	t.Run("RestrictB", func(t *testing.T) {
+		th := setup("a.b")
+		run()
+		entries := th.Pop()
+		assert.Len(t, entries, 1)
+		th.Assert(t, entries, 0, InfoLevel, "a", "test-a")
+	})
+	t.Run("RestrictC", func(t *testing.T) {
+		th := setup("a.b.c")
+		run()
+		entries := th.Pop()
+		assert.Len(t, entries, 2)
+		th.Assert(t, entries, 0, InfoLevel, "a", "test-a")
+		th.Assert(t, entries, 1, InfoLevel, "b", "test-b")
+	})
+	t.Run("RestrictD", func(t *testing.T) {
+		th := setup("a.b.c.d")
+		run()
+		entries := th.Pop()
+		assert.Len(t, entries, 3)
+		th.Assert(t, entries, 0, InfoLevel, "a", "test-a")
+		th.Assert(t, entries, 1, InfoLevel, "b", "test-b")
+		th.Assert(t, entries, 2, InfoLevel, "c", "test-c")
+	})
+	t.Run("RestrictA_BoostC", func(t *testing.T) {
+		th := setup("a")
+		PrefixLevel(InfoLevel, "a.b.c")
+		run()
+		entries := th.Pop()
+		assert.Len(t, entries, 2)
+		th.Assert(t, entries, 0, InfoLevel, "c", "test-c")
+		th.Assert(t, entries, 1, InfoLevel, "d", "test-d")
+	})
+	t.Run("RestrictA_BoostD", func(t *testing.T) {
+		th := setup("a")
+		PrefixLevel(InfoLevel, "a.b.c.d")
+		run()
+		entries := th.Pop()
+		assert.Len(t, entries, 1)
+		th.Assert(t, entries, 0, InfoLevel, "d", "test-d")
+	})
 }
