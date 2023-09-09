@@ -7,6 +7,22 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const A = "test-A"
+const B = "test-B"
+const C = "test-C"
+const D = "test-D"
+
+func setup(baseLevel Level, compLevel Level, labels ...string) *TestHarness {
+	th := New()
+	Init(WithLevel(baseLevel), WithHarness(th))
+	for _, label := range labels {
+		ComponentLevel(compLevel, label)
+	}
+	return th
+}
+
+//
+
 const expectedF = "%s\x1b[%dm%s\x1b[0m%s test %s"
 
 func TestSinglePrefix(t *testing.T) {
