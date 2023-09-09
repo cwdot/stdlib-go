@@ -13,16 +13,14 @@ func ignored(action Level) bool {
 		return false
 	}
 
-	show := false
+	show := false // we need to get the most specific one (must complete the loop)
 	for _, p := range stack {
 		// a.b.c.d is DEBUG
 		// current is INFO (logger)
 		// true if DEBUG(5) > INFO (4)
 		if v, ok := components[p.LastID]; ok {
 			show = action < v
-		}
-
-		if v, ok := prefixes.GetByString(p.CanonicalID); ok {
+		} else if v, ok := prefixes.GetByString(p.CanonicalID); ok {
 			show = action < v
 		}
 	}
