@@ -19,6 +19,8 @@ var (
 	// indent custom indention for a particular prefix; resets when the currentDisplay changes
 	indent int
 
+	components map[string]Level
+
 	// prefixLevel Sets the logging level for specific prefixes
 	prefixes trie.Trie[Level]
 
@@ -74,4 +76,5 @@ func Init(opts ...func(opts *Opts)) {
 	displayWhitespace = ""
 
 	prefixes = trie.Trie[Level]{}
+	components = make(map[string]Level)
 }
