@@ -2,6 +2,7 @@ package wood
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"os"
 	"time"
@@ -154,4 +155,10 @@ func WithFields(fields logrus.Fields) *logrus.Entry {
 // or Panic on the Entry it returns.
 func WithTime(t time.Time) *logrus.Entry {
 	return std.WithTime(t)
+}
+
+func DumpState() {
+	fmt.Println("Stack:", stack)
+	fmt.Println("components:", components)
+	fmt.Println("Prefixes:", prefixes)
 }
