@@ -6,7 +6,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/porfirion/trie v1.0.0
 	github.com/sirupsen/logrus v1.9.0
-	github.com/stretchr/testify v1.8.1
+	github.com/stretchr/testify v1.8.4
 	golang.org/x/exp v0.0.0-20221208152030-732eee02a75a
 )
 
