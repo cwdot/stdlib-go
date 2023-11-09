@@ -111,9 +111,11 @@ func computeCanonical(extra string) string {
 	b.Grow(100)
 	if len(stack) > 0 {
 		b.WriteString(stack[0].LastID)
-		for _, s := range stack[1:] {
-			b.WriteString(".")
-			b.WriteString(s.LastID)
+		if len(stack) > 1 {
+			for _, s := range stack[1:] {
+				b.WriteString(".")
+				b.WriteString(s.LastID)
+			}
 		}
 		if extra != "" {
 			b.WriteString(".")
