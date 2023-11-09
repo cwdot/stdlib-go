@@ -9,7 +9,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/cwdot/go-stdlib/color"
+	"github.com/cwdot/stdlib-go/color"
 )
 
 func New() *TestHarness {

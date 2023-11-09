@@ -5,7 +5,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/cwdot/go-stdlib/wood"
+	"github.com/cwdot/stdlib-go/wood"
 )
 
 func New() *DoubleMap {

@@ -1,4 +1,4 @@
-module github.com/cwdot/go-stdlib
+module github.com/cwdot/stdlib-go
 
 go 1.21
 
