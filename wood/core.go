@@ -38,6 +38,21 @@ func WithLevel(level Level) func(*Opts) {
 	}
 }
 
+func WithVerbosity(verbosity Level) func(*Opts) {
+	return func(opts *Opts) {
+		switch verbosity {
+		case 3:
+			opts.level = TraceLevel
+		case 2:
+			opts.level = TraceLevel
+		case 1:
+			opts.level = DebugLevel
+		default:
+			opts.level = InfoLevel
+		}
+	}
+}
+
 type Opts struct {
 	level     Level
 	output    io.Writer
