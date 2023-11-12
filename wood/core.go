@@ -38,7 +38,7 @@ func WithLevel(level Level) func(*Opts) {
 	}
 }
 
-func WithVerbosity(verbosity Level) func(*Opts) {
+func WithVerbosity(verbosity int) func(*Opts) {
 	return func(opts *Opts) {
 		switch verbosity {
 		case 3:
