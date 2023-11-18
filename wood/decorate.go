@@ -35,7 +35,14 @@ func decorateF(level Level, args []interface{}, fn func(format string, args []an
 		arguments = append(arguments, a...)
 	}
 
-	formats = append(formats, args[0].(string))
+	switch t := args[0].(type) {
+	case string:
+		formats = append(formats, t)
+	case interface{}:
+		formats = append(formats, "%v")
+	default:
+		formats = append(formats, "%v")
+	}
 	arguments = append(arguments, args[1:]...)
 
 	fn(strings.Join(formats, ""), arguments)
