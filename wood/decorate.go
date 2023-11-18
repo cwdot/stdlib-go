@@ -38,10 +38,8 @@ func decorateF(level Level, args []interface{}, fn func(format string, args []an
 	switch t := args[0].(type) {
 	case string:
 		formats = append(formats, t)
-	case interface{}:
-		formats = append(formats, "%v")
 	default:
-		formats = append(formats, "%v")
+		formats = append(formats, fmt.Sprintf("%v", t))
 	}
 	arguments = append(arguments, args[1:]...)
 
