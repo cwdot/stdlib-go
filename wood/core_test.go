@@ -110,8 +110,11 @@ func TestLogPrefixPeriods(t *testing.T) {
 func Test_decorate(t *testing.T) {
 	Init()
 
-	args := TLog("test", "f")
-	require.Equal(t, []any{"testf"}, args)
+	t.Run("simple", func(t *testing.T) {
+		args := TLog("test", "f")
+		require.Equal(t, []any{"testf"}, args)
+	})
+
 }
 
 func TLogF(arguments ...interface{}) (string, []any) {
