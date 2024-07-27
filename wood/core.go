@@ -38,6 +38,12 @@ func WithLevel(level Level) func(*Opts) {
 	}
 }
 
+func WithNoColors() func(*Opts) {
+	return func(opts *Opts) {
+		opts.noColors = true
+	}
+}
+
 func WithVerbosity(verbosity int) func(*Opts) {
 	return func(opts *Opts) {
 		switch verbosity {
@@ -57,6 +63,7 @@ type Opts struct {
 	level     Level
 	output    io.Writer
 	formatter logrus.Formatter
+	noColors  bool
 }
 
 func Init(opts ...func(opts *Opts)) {
@@ -77,16 +84,21 @@ func Init(opts ...func(opts *Opts)) {
 		//FieldMap:                  nil,
 	})
 
-	base := &Opts{level: InfoLevel}
+	settings := &Opts{level: InfoLevel}
 	for _, opt := range opts {
-		opt(base)
+		opt(settings)
 	}
-	std.SetLevel(logrus.Level(base.level))
-	if base.output != nil {
-		std.SetOutput(io.MultiWriter(os.Stderr, base.output))
+	std.SetLevel(logrus.Level(settings.level))
+	if settings.output != nil {
+		std.SetOutput(io.MultiWriter(os.Stderr, settings.output))
 	}
-	if base.formatter != nil {
-		std.SetFormatter(base.formatter)
+	if settings.formatter != nil {
+		std.SetFormatter(settings.formatter)
+	}
+	if settings.noColors {
+		std.SetFormatter(&logrus.TextFormatter{
+			DisableColors: true,
+		})
 	}
 
 	stack = make([]*logStack, 0, 5)
