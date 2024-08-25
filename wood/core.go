@@ -9,6 +9,8 @@ import (
 
 	"github.com/porfirion/trie"
 	"github.com/sirupsen/logrus"
+
+	"github.com/cwdot/stdlib-go/color"
 )
 
 var (
@@ -99,6 +101,7 @@ func Init(opts ...func(opts *Opts)) {
 		std.SetFormatter(&logrus.TextFormatter{
 			DisableColors: true,
 		})
+		color.Disable()
 	}
 
 	stack = make([]*logStack, 0, 5)
