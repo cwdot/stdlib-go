@@ -8,11 +8,17 @@ import (
 type Color string
 
 func (c Color) It(text any) string {
-	return fmt.Sprintf("%s%v%s", c, text, Reset)
+	if enabled {
+		return fmt.Sprintf("%s%v%s", c, text, Reset)
+	}
+	return fmt.Sprintf("%v", text)
 }
 
 func It(c Color, text any) string {
-	return fmt.Sprintf("%s%v%s", c, text, Reset)
+	if enabled {
+		return fmt.Sprintf("%s%v%s", c, text, Reset)
+	}
+	return fmt.Sprintf("%v", text)
 }
 
 const (
@@ -55,4 +61,3 @@ var reStrip = regexp.MustCompile(ansi)
 func Strip(text string) string {
 	return reStrip.ReplaceAllString(text, "")
 }
-
