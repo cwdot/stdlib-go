@@ -36,9 +36,9 @@ func TestMapList(t *testing.T) {
 }
 
 func TestMapListCustom(t *testing.T) {
-	ml := NewMapList[Demo, string]()
+	ml := NewMapList[demo, string]()
 
-	key := Demo{}
+	key := demo{}
 	ml.Add(key, "a")
 	require.Equal(t, 1, ml.Size())
 
@@ -48,8 +48,8 @@ func TestMapListCustom(t *testing.T) {
 	require.Equal(t, 1, ml.Count(key))
 }
 
-type Demo struct{}
+type demo struct{}
 
-func (t Demo) String() string {
+func (t demo) String() string {
 	return "Demo"
 }

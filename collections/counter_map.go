@@ -1,0 +1,87 @@
+package collections
+
+import (
+	"fmt"
+	"sort"
+	"strings"
+	"sync"
+)
+
+func NewCounterMap[K comparable]() *CounterMap[K] {
+	counter := make(map[K]int)
+	return &CounterMap[K]{
+		counter: counter,
+	}
+}
+
+type CounterMap[K comparable] struct {
+	mu      sync.Mutex
+	counter map[K]int
+}
+
+// Add saves item; creates path
+func (km *CounterMap[K]) Add(key K, increment int) bool {
+	km.mu.Lock()
+	defer km.mu.Unlock()
+
+	value, ok := km.counter[key]
+	if ok {
+		value += increment
+	} else {
+		value = increment
+	}
+	km.counter[key] = value
+	return true
+}
+
+// Get return Item by its id
+func (km *CounterMap[K]) Get(key K) (int, bool) {
+	km.mu.Lock()
+	defer km.mu.Unlock()
+
+	item, ok := km.counter[key]
+	return item, ok
+}
+
+// Clone return a copy of the map
+func (km *CounterMap[K]) Clone() map[K]int {
+	km.mu.Lock()
+	defer km.mu.Unlock()
+
+	clone := make(map[K]int)
+	for k, v := range km.counter {
+		clone[k] = v
+	}
+	return clone
+}
+
+// Keys return all keys
+func (km *CounterMap[K]) Keys() []K {
+	km.mu.Lock()
+	defer km.mu.Unlock()
+
+	keys := make([]K, 0, len(km.counter))
+	for k := range km.counter {
+		keys = append(keys, k)
+	}
+	sort.Slice(keys, func(i, j int) bool {
+		return fmt.Sprintf("%v", keys[i]) < fmt.Sprintf("%v", keys[j])
+	})
+	return keys
+}
+
+// String debug
+func (km *CounterMap[K]) String() string {
+	keys := km.Keys()
+
+	km.mu.Lock()
+	defer km.mu.Unlock()
+
+	items := make([]string, 0, len(km.counter))
+	for _, k := range keys {
+		v := km.counter[k]
+		items = append(items, fmt.Sprintf("%v=%d", k, v))
+	}
+
+	return fmt.Sprintf("CounterMap{%s}", strings.Join(items, ", "))
+}
