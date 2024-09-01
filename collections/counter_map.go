@@ -34,6 +34,18 @@ func (km *CounterMap[K]) Add(key K, increment int) bool {
 	return true
 }
 
+func (km *CounterMap[K]) AddAll(other *CounterMap[K]) {
+	km.mu.Lock()
+	defer km.mu.Unlock()
+
+	other.mu.Lock()
+	defer other.mu.Unlock()
+
+	for k, v := range other.counter {
+		km.counter[k] += v
+	}
+}
+
 // Get return Item by its id
 func (km *CounterMap[K]) Get(key K) (int, bool) {
 	km.mu.Lock()
