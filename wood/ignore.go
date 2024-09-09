@@ -23,6 +23,9 @@ func ignored(action Level) bool {
 		} else if v, ok := prefixes.GetByString(p.CanonicalID); ok {
 			ignore = action > v
 		}
+		if ignore {
+			break
+		}
 	}
 	return ignore
 }
