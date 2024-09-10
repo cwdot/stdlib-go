@@ -91,6 +91,26 @@ func (km *CounterMap[K]) Keys() []K {
 	return keys
 }
 
+// KeySize counts the number of keys
+func (km *CounterMap[K]) KeySize() int {
+	km.mu.Lock()
+	defer km.mu.Unlock()
+
+	return len(km.counter)
+}
+
+// ValueSize counts the number of values
+func (km *CounterMap[K]) ValueSize() int {
+	km.mu.Lock()
+	defer km.mu.Unlock()
+
+	count := 0
+	for _, v := range km.counter {
+		count += v
+	}
+	return count
+}
+
 // String debug
 func (km *CounterMap[K]) String() string {
 	keys := km.Keys()

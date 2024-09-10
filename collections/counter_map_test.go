@@ -106,3 +106,16 @@ func TestCounterMap_AddAll(t *testing.T) {
 	assert.Equal(t, 4, cm.counter["key2"])
 	assert.Equal(t, 5, cm.counter["key3"])
 }
+
+func TestCounterMap_Size(t *testing.T) {
+	cm := NewCounterMap[string]()
+	cm.Add("key1", 1)
+	require.Equal(t, 1, cm.KeySize())
+	require.Equal(t, 1, cm.ValueSize())
+	cm.Add("key1", 1)
+	require.Equal(t, 1, cm.KeySize())
+	require.Equal(t, 2, cm.ValueSize())
+	cm.Add("key2", 4)
+	require.Equal(t, 2, cm.KeySize())
+	require.Equal(t, 6, cm.ValueSize())
+}
