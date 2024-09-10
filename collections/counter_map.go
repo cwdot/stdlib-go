@@ -20,18 +20,27 @@ type CounterMap[K comparable] struct {
 }
 
 // Add saves item; creates path
-func (km *CounterMap[K]) Add(key K, increment int) bool {
+// Returns the new value and a boolean indicating if the key was found
+func (km *CounterMap[K]) Add(key K, increment int) (int, bool) {
 	km.mu.Lock()
 	defer km.mu.Unlock()
 
+	var found bool
 	value, ok := km.counter[key]
 	if ok {
 		value += increment
+		found = true
 	} else {
 		value = increment
 	}
 	km.counter[key] = value
-	return true
+	return value, found
+}
+
+// Remove saves item; creates path
+// Returns the new value and a boolean indicating if the key was found
+func (km *CounterMap[K]) Remove(key K, increment int) (int, bool) {
+	return km.Add(key, -increment)
 }
 
 func (km *CounterMap[K]) AddAll(other *CounterMap[K]) {

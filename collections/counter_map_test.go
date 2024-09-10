@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestNewCounterMap(t *testing.T) {
@@ -14,9 +15,17 @@ func TestNewCounterMap(t *testing.T) {
 
 func TestCounterMap_Add(t *testing.T) {
 	cm := NewCounterMap[string]()
-	cm.Add("key1", 1)
-	cm.Add("key1", 1)
-	cm.Add("key2", 4)
+	v, exists := cm.Add("key1", 1)
+	require.False(t, exists)
+	assert.Equal(t, 1, v)
+
+	v, exists = cm.Add("key1", 1)
+	require.True(t, exists)
+	assert.Equal(t, 2, v)
+
+	v, exists = cm.Add("key2", 4)
+	require.False(t, exists)
+	assert.Equal(t, 4, v)
 
 	assert.Equal(t, 2, cm.counter["key1"])
 	assert.Equal(t, 4, cm.counter["key2"])
