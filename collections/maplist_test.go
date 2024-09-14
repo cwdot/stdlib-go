@@ -32,7 +32,7 @@ func TestMapList(t *testing.T) {
 	assert.Equal(t, []string{"x"}, c["x"])
 
 	require.Equal(t, 2, ml.Size())
-	require.Equal(t, 4, ml.GrandSize())
+	require.Equal(t, 4, ml.TotalSize())
 }
 
 func TestMapListCustom(t *testing.T) {

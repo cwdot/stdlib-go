@@ -86,8 +86,8 @@ func (km *MapList[K, T]) Size() int {
 	return len(km.m)
 }
 
-// GrandSize returns the total number of tracked items across the map and sublists
-func (km *MapList[K, T]) GrandSize() int {
+// TotalSize returns the total number of tracked items across the map and sublists
+func (km *MapList[K, T]) TotalSize() int {
 	km.mu.Lock()
 	defer km.mu.Unlock()
 
@@ -108,4 +108,30 @@ func (km *MapList[K, T]) Copy() map[K][]T {
 		items[k] = v
 	}
 	return items
+}
+
+// IterateLists iterate list keys
+func (km *MapList[K, T]) IterateLists(fn func(K, []T) bool) {
+	km.mu.Lock()
+	defer km.mu.Unlock()
+
+	for k, v := range km.m {
+		if !fn(k, v) {
+			break
+		}
+	}
+}
+
+// IterateItems iterate lists and their items
+func (km *MapList[K, T]) IterateItems(fn func(K, T) bool) {
+	km.mu.Lock()
+	defer km.mu.Unlock()
+
+	for k, v := range km.m {
+		for _, item := range v {
+			if !fn(k, item) {
+				break
+			}
+		}
+	}
 }
